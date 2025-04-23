@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutor Virtual - Cadastro</title>
+  <link rel="shortcut icon" href="../img/logo-ipiz.jpg" type="image/x-icon">
+  <link rel="stylesheet" href="../style/common.css">
+  <!-- <link rel="stylesheet" href="../style/login-cadastro.css"> -->
+   <!-- Font Awesome -->\
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Cadastro</h1>
+    <div id="message-area" class="message-area"></div>
+    <form id="cadastro-form">
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" placeholder="Seu nome completo" required>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" placeholder="Seu melhor email" required>
+      <label for="senha">Senha:</label>
+      <input type="password" id="senha" name="senha" placeholder="Mínimo 6 caracteres" required minlength="6">
+      <label for="tipo">Tipo de Usuário:</label>
+      <select id="tipo" name="tipo" required>
+        <option value="" disabled selected>Selecione...</option>
+        <option value="aluno">Aluno</option>
+        <option value="professor">Professor</option>
+      </select>
+      <div id="professor-fields" style="display: none;">
+        <label for="disciplinas">Disciplinas (separadas por vírgula):</label>
+        <input type="text" id="disciplinas" name="disciplinas" placeholder="Ex: Matemática, Física">
+      </div>
+      <div id="aluno-fields" style="display: none;">
+        <label for="turma">Turma:</label>
+        <input type="text" id="turma" name="turma" placeholder="Ex: 10A, TINF-23">
+      </div>
+      <button type="submit" id="register-button">Cadastrar</button>
+    </form>
+    <p>Já tem conta? <a href="login.html">Faça login</a></p>
+     <p style="margin-top: 1rem;"><a href="../index.html">← Voltar para Início</a></p>
+  </div>
+
+   <!-- Indicador de Loading com Font Awesome -->
+  <div id="loading" class="loading-indicator">
+      <i class="fas fa-spinner fa-spin fa-3x"></i>
+  </div>
+
+  <script src="../script/utils.js"></script>
+  <script src="../script/api.js"></script>
+  <script src="../script/auth.js"></script>
+</body>
+</html>

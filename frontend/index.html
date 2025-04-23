@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tutor Virtual - Início</title>
+  <link rel="stylesheet" href="style/common.css"> <!-- Inclui common.css -->
+  <link rel="stylesheet" href="style/index.css"> <!-- Mantém index.css para estilos específicos -->
+  <link rel="shortcut icon" href="img/logo-ipiz.jpg" type="image/x-icon">
+</head>
+<body>
+  <!-- Usar classe do common.css -->
+  <header class="main-header">
+    <div class="logo">
+      <img src="img/logo-ipiz.jpg" alt="Logo Tutor Virtual" class="logo-img" />
+      <span class="logo-text">Tutor Virtual</span>
+    </div>
+    <nav class="nav">
+      <ul>
+        <li><a href="page/login.html">Login</a></li>
+        <li><a href="page/cadastro.html">Cadastro</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Desenvolva Mais Rápido. Aprenda em Qualquer Lugar.</h1>
+      <p>
+        Crie e gerencie conteúdos educacionais com facilidade.
+        A plataforma de aprendizagem moderna para alunos e professores.
+      </p>
+      <div class="hero-buttons">
+        <!-- Usar classes de botão do common.css -->
+        <a href="page/login.html" class="btn">Acesse Sua Conta</a>
+        <a href="page/cadastro.html" class="btn">Crie Uma Conta</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="feature-item">
+      <h2>Gerencie PDFs com Facilidade</h2>
+      <p>Carregue, visualize e organize materiais de aula em poucos cliques.</p> <!-- Texto ajustado -->
+    </div>
+    <div class="feature-item">
+      <h2>Tutor Inteligente</h2> <!-- Nova feature -->
+      <p>Tire dúvidas e explore conceitos com nosso assistente IA a qualquer hora.</p>
+    </div>
+    <div class="feature-item">
+      <h2>Estude Onde Quiser</h2>
+      <p>Tenha acesso aos conteúdos a qualquer momento, em qualquer dispositivo.</p>
+    </div>
+  </section>
+
+  <!-- Usar classe do common.css -->
+  <footer class="main-footer">
+    <p>© 2025 Tutor Virtual. Todos os direitos reservados.</p>
+  </footer>
+
+  <!-- Scripts no final -->
+  <script src="script/utils.js"></script>
+  <script>
+    // Simples verificação se já está logado para redirecionar (opcional)
+    if (Utils.isLoggedIn()) {
+       const user = Utils.getUserData(); // Pega dados do localStorage
+       if (user && user.tipo === 'aluno') {
+           // window.location.href = 'page/dashboard_aluno.html'; // Descomente se quiser redirect auto
+       } else if (user && user.tipo === 'professor') {
+           // window.location.href = 'page/dashboard_professor.html'; // Descomente se quiser redirect auto
+       }
+    }
+  </script>
+</body>
+</html>

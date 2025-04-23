@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutor Virtual - Login</title>
+  <link rel="stylesheet" href="../style/common.css">
+  <link rel="shortcut icon" href="../img/logo-ipiz.jpg" type="image/x-icon">
+  <!-- <link rel="stylesheet" href="../style/cadastro-login.css"> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Login</h1>
+    <div id="message-area" class="message-area"></div>
+    <form id="login-form">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" placeholder="Seu email" required>
+      <label for="senha">Senha:</label>
+      <input type="password" id="senha" name="senha" placeholder="Sua senha" required>
+      <button type="submit" id="login-button">Entrar</button>
+    </form>
+    <p>Ainda não tem conta? <a href="cadastro.html">Cadastre-se</a></p>
+    <p style="margin-top: 1rem;"><a href="../index.html">← Voltar para Início</a></p>
+  </div>
+
+  <!-- Indicador de Loading com Font Awesome -->
+  <div id="loading" class="loading-indicator">
+      <i class="fas fa-spinner fa-spin fa-3x"></i>
+  </div>
+
+  <script src="../script/utils.js"></script>
+  <script src="../script/api.js"></script>
+  <script src="../script/auth.js"></script>
+</body>
+</html>

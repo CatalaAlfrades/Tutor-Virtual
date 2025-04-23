@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Aluno - Tutor Virtual</title>
+    <link rel="stylesheet" href="../style/common.css">
+    <link rel="stylesheet" href="../style/dashboard.css">
+    <link rel="shortcut icon" href="../img/logo-ipiz.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js"></script>
+    <style>
+        /* Estilos existentes (Perfil, Hambúrguer, Botões de Ação) */
+        .main-header .user-info { display: flex; align-items: center; gap: 0.8rem; }
+        .main-header .user-info .profile-icon { font-size: 1.5rem; color: var(--primary-color); }
+        /*.mobile-menu-button { display: none; }  Será exibido via CSS media query */
+        .manual-item .manual-actions { margin-top: 0.7rem; display: flex; gap: 0.8rem; }
+        /* Estilo para os botões (eram links 'a', agora são 'button') */
+        .manual-item .manual-actions button { /* Aplicar aos botões */
+            font-size: 0.9rem; padding: 0.3rem 0.8rem; border: 1px solid var(--primary-color);
+            display: inline-flex; align-items: center; gap: 0.4rem; border-radius: 4px;
+            color: var(--primary-color); text-decoration: none;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            background-color: transparent; /* Garante fundo transparente inicial */
+            cursor: pointer; /* Cursor de botão */
+        }
+        .manual-item .manual-actions button:hover { /* Efeito hover para botões */
+            background-color: var(--primary-color); color: var(--text-dark);
+        }
+        /* Estilo para o cabeçalho da disciplina (opcional, pode ir para dashboard.css) */
+        .discipline-header {
+            color: var(--text-light);
+            border-bottom: 1px solid var(--medium-bg);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            margin-top: 1.5rem; /* Espaço entre disciplinas */
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .discipline-header:first-of-type {
+             margin-top: 0; /* Remove margem do primeiro cabeçalho */
+        }
+        .discipline-header .fa-tag {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body class="dashboard">
+     <header class="main-header">
+        <div class="header-left">
+             <button class="mobile-menu-button" id="mobile-menu-toggle" aria-label="Abrir Menu Lateral" aria-expanded="false"> <i class="fas fa-bars"></i> </button>
+            <div class="logo"> <img src="../img/logo-ipiz.jpg" alt="Logo" class="logo-img" /> <span class="logo-text">Tutor Virtual IPIZ</span> </div>
+        </div>
+        <div class="header-right">
+            <nav>
+                 <div class="user-actions">
+                    <div class="user-info"> <i class="fas fa-user-circle profile-icon"></i> <span>Aluno(a): </span><span id="user-name">Aluno(a)</span></span> </div>
+                    <button id="logout-button" title="Sair"><i class="fas fa-sign-out-alt"></i> <span class="logout-text">Sair</span></button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <!-- Sidebar APENAS com Título, Mensagens, Loading e Lista -->
+        <aside class="sidebar manuals-sidebar" id="sidebar">
+            <h2><i class="fas fa-book"></i> Manuais Disponíveis</h2>
+            <!-- Filtros REMOVIDOS -->
+            <div id="manuals-message-area" class="message-area"></div>
+            <div id="manuals-loading" style="text-align: center; display: none; padding: 1rem;">
+                <i class="fas fa-spinner fa-spin fa-lg"></i>
+                <span style="margin-left: 10px;">Carregando manuais...</span>
+            </div>
+            <ul id="manuals-list" style="list-style: none; padding: 0;">
+                <!-- Manuais agrupados serão inseridos aqui pelo JS -->
+            </ul>
+            <section class="sidebar-extra-actions" style="margin-top: 2rem; border-top: 1px solid var(--medium-bg); padding-top: 1.5rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                <button id="open-history-modal-btn" class="btn btn-secondary-alt" >
+                    <i class="fas fa-history"></i> Ver Histórico de Conversas
+                </button>
+                <button id="open-feedback-modal-btn" class="btn btn-secondary-alt">
+                    <i class="fas fa-comment-dots"></i> Enviar Feedback / Reportar
+                </button>
+            </section>
+        </aside>
+
+        <!-- Área do Chat (sem alterações) -->
+        <section class="chat-area">
+             <header class="chat-area-header">
+                 <h2 style="color: var(--primary-color); font-size: 1.3rem; margin: 0;"><i class="fas fa-comments"></i> Fale com o Tutor IA</h2>
+            </header>
+            <div id="chat-container" class="chat-container">
+                 <!-- Mensagens serão adicionadas aqui -->
+            </div>
+            <footer class="chat-footer">
+                 <div id="chat-message-area" class="message-area" style="margin-bottom: 0.5rem;"></div>
+                <form id="chat-form">
+                    <input type="text" id="message-input" placeholder="Digite sua dúvida..." required autocomplete="off">
+                    <button type="submit" id="send-button" title="Enviar Mensagem">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </footer>
+        </section>
+    </main>
+
+    <div id="loading" class="loading-indicator"> <i class="fas fa-spinner fa-spin fa-3x"></i> </div>
+
+    <div id="history-modal" class="modal-overlay">
+        <div class="modal-content history-modal-content">
+            <button id="close-history-modal-btn" class="modal-close-btn" title="Fechar Histórico">×</button>
+            <h2><i class="fas fa-history"></i> Histórico de Conversas</h2>
+    
+            <div class="history-filters" style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; border-bottom: 1px solid var(--medium-bg); padding-bottom: 1rem;">
+                <input type="text" id="history-search-q" placeholder="Buscar por palavra..." style="flex-grow: 1; min-width: 150px; margin-bottom: 0;">
+                <input type="date" id="history-date-from" title="Data Inicial" style="min-width: 120px; margin-bottom: 0;">
+                <input type="date" id="history-date-to" title="Data Final" style="min-width: 120px; margin-bottom: 0;">
+                <button id="history-search-btn" class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+
+    
+             <div id="history-message-area" class="message-area" style="margin-bottom: 0.5rem;"></div>
+    
+            <div id="history-results-container" style="height: 60vh; max-height: 500px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 1rem; margin-bottom: 1rem; background-color: rgba(0,0,0,0.2);">
+                <p style="text-align:center; color: var(--text-muted);">Carregando histórico...</p>
+            </div>
+    
+            <div class="history-pagination" style="display: flex; justify-content: space-between; align-items: center;">
+                <button id="history-prev-btn" class="btn btn-secondary-alt" disabled><i class="fas fa-arrow-left"></i> Anterior</button>
+                <span id="history-page-info" style="font-size: 0.9rem; color: var(--text-muted);">Página ? de ?</span>
+                <button id="history-next-btn" class="btn btn-secondary-alt" disabled>Próxima <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="feedback-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeFeedbackModal()" title="Fechar">×</button>
+            <h2><i class="fas fa-comment-dots"></i> Enviar Feedback</h2>
+            <p style="margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-muted);">Encontrou um erro ou tem uma sugestão? Conte-nos!</p>
+            <form id="feedback-form">
+                <div class="form-group">
+                    <label for="feedback-text">Sua mensagem:</label>
+                    <textarea id="feedback-text" rows="6" placeholder="Descreva o problema ou sua sugestão aqui..." required></textarea>
+                </div>
+                <div id="feedback-message-area" class="message-area" style="margin-bottom: 1rem;"></div>
+                <button type="submit" id="submit-feedback-btn" class="btn" style="width:100%;"><i class="fas fa-paper-plane"></i> Enviar Mensagem</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Scripts -->
+    <script src="../script/utils.js"></script>
+    <script src="../script/api.js"></script>
+    <script src="../script/chat_aluno.js"></script>       
+</body>
+</html>

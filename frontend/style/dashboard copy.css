@@ -1,0 +1,343 @@
+/* frontend/style/dashboard.css */
+
+/* Garante que o body ocupe toda a altura */
+html, body {
+  height: 100%;
+  overflow-x: hidden; /* Prevenir scroll horizontal geral */
+}
+
+body.dashboard {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--dark-bg);
+  color: var(--text-light); /* Cor padrão do texto */
+}
+
+/* Área principal do dashboard */
+.dashboard-main {
+  flex: 1;
+  display: flex;
+  overflow: hidden; /* Controla scroll interno das áreas */
+  padding: 1.5rem; /* Um pouco mais de respiro */
+  gap: 1.5rem;    /* Espaço entre sidebar e chat */
+}
+
+/* --- Sidebar --- */
+.sidebar {
+  flex: 0 0 300px;
+  background-color: rgba(0, 0, 0, 0.4); /* Fundo um pouco mais sutil */
+  padding: 1.5rem;
+  border-radius: 8px;
+  overflow-y: auto; /* Scroll apenas se necessário */
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil */
+  transition: left 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+.manuals-sidebar { /* Aluno */
+  flex: 0 0 280px;
+}
+
+.sidebar h2, .sidebar h3 {
+  color: var(--primary-color);
+  margin: 0 0 1.5rem 0; /* Margem inferior, remove superior */
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-weight: 600;
+}
+.sidebar h3 { /* Subtítulos */
+  font-size: 1.1rem;
+  color: var(--text-light); /* Cor diferente para subtítulo */
+  margin-bottom: 1rem;
+  margin-top: 1.5rem; /* Espaço acima de subtítulos */
+  gap: 0.6rem;
+}
+.sidebar h2 i, .sidebar h3 i {
+  width: 20px; /* Largura fixa para ícones */
+  text-align: center;
+}
+
+
+/* --- Seção de Upload (Professor) --- */
+.upload-section {
+  margin-bottom: 1.5rem; /* Espaço abaixo da seção */
+}
+.upload-section label[for="file-input"] {
+  background-color: var(--primary-color); color: var(--text-dark);
+  padding: 0.75rem 1.5rem; border-radius: 5px; cursor: pointer;
+  display: flex; /* Usar flex para alinhar ícone e texto */
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  text-align: center; margin-bottom: 0.5rem; /* Menos margem */
+  transition: filter 0.2s; border: none; font-weight: 600;
+  width: 100%; /* Ocupar largura */
+}
+.upload-section label[for="file-input"]:hover { filter: brightness(1.15); }
+.upload-section input[type="file"] { display: none; }
+#file-name-display {
+  font-size: 0.85rem; /* Menor */
+  font-style: italic; color: var(--text-muted);
+  margin-bottom: 1rem; text-align: center;
+  word-break: break-all; min-height: 1.2em;
+  padding: 0.3rem 0; /* Pequeno padding */
+}
+
+
+/* --- Seção de Lista de Arquivos/Manuais --- */
+.files-section ul, .manuals-sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0; /* Remover margem padrão da UL */
+}
+
+/* --- MODIFICAÇÃO PRINCIPAL: Layout para .file-item e .manual-item --- */
+.file-item, .manual-item {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-light); /* Cor padrão do texto no item */
+  margin-bottom: 1rem; /* Aumenta espaço entre itens */
+  padding: 1rem 1.2rem;
+  border-radius: 6px; /* Um pouco mais suave */
+  border-left: 4px solid transparent; /* Borda mais grossa */
+  transition: background-color 0.2s, border-left-color 0.2s, box-shadow 0.2s;
+  display: flex;            /* *** USA FLEXBOX *** */
+  flex-direction: column;   /* *** EMPILHA VERTICALMENTE *** */
+  align-items: stretch;     /* Filhos ocupam largura */
+}
+.file-item:hover, .manual-item:hover {
+  background-color: rgba(255, 255, 255, 0.09);
+  border-left-color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3); /* Sombra no hover */
+}
+
+/* --- Filhos diretos do item (Título, Spans, Descrição) --- */
+/* Remove a necessidade da div .file-info */
+.file-item > h4, .manual-item > h4,
+.file-item > span, .manual-item > span,
+.file-item > p, .manual-item > p {
+  display: block;            /* Comportamento de bloco */
+  overflow-wrap: break-word; /* Quebra de palavras */
+  word-wrap: break-word;
+  word-break: break-word;
+  margin: 0 0 0.4rem 0;   /* Margem inferior padrão */
+  /* Remove estilos de truncamento */
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  max-height: none;
+}
+
+/* Título (H4) */
+.file-item > h4, .manual-item > h4 {
+  color: var(--primary-color); /* Destaque no título */
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: flex; /* Para alinhar ícone (se adicionado) */
+  align-items: center;
+  gap: 0.4rem;
+}
+/* Ícone opcional antes do título */
+.file-item > h4 > i.fa-file-alt,
+.manual-item > h4 > i.fa-file-alt { /* Assumindo que JS adicione este ícone se necessário */
+   color: var(--primary-color);
+   font-size: 0.9em;
+   margin-right: 0.2rem;
+}
+
+/* Informações secundárias (Professor, Data/Tamanho) */
+.file-item > span, .manual-item > span {
+  font-size: 0.8rem;
+  color: var(--text-muted); /* Cor mais suave */
+  display: flex; /* Alinhar ícone e texto */
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+.file-item > span i, .manual-item > span i {
+  width: 14px; /* Alinhamento dos ícones */
+  text-align: center;
+  opacity: 0.8;
+}
+
+/* Descrição (P) */
+.file-item > p, .manual-item > p {
+  font-size: 0.85rem;
+  color: var(--text-light); /* Pode ser mais claro que o span */
+  line-height: 1.5;
+  margin-bottom: 0.8rem; /* Mais espaço antes das ações */
+}
+
+/* Tag de Disciplina (Span) */
+.disciplina-tag { /* Adicione esta classe no JS: li.querySelector('span[style*="background"]').classList.add('disciplina-tag') */
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-light);
+  padding: 0.2em 0.6em;
+  border-radius: 3px;
+  display: inline-block; /* Para não ocupar linha inteira */
+  margin-bottom: 0.8rem; /* Espaço antes das ações */
+  margin-right: 0.5rem;
+}
+
+/* --- Div de Ações (Comum para Professor e Aluno) --- */
+.file-actions, .manual-actions {
+  margin-top: auto;      /* Tenta empurrar para baixo */
+  padding-top: 0.6rem;   /* Espaço acima */
+  display: flex;
+  flex-wrap: wrap;       /* Permite que botões quebrem linha em telas pequenas */
+  gap: 0.6rem;           /* Espaço entre botões */
+  align-self: flex-start; /* Alinhado à esquerda */
+  border-top: 1px solid rgba(255, 255, 255, 0.1); /* Linha separadora sutil */
+}
+
+/* Botões dentro das Ações */
+.file-actions button, .manual-actions button {
+  background: transparent;
+  border: 1px solid var(--primary-color); /* Borda sutil */
+  color: var(--primary-color);
+  cursor: pointer;
+  padding: 0.4rem 0.8rem; /* Padding ajustado */
+  font-size: 0.85rem; /* Ligeiramente menor */
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+  opacity: 0.9; /* Leve transparência */
+}
+.file-actions button:hover, .manual-actions button:hover {
+  background-color: var(--primary-color);
+  color: var(--text-dark); /* Contraste no hover */
+  opacity: 1;
+  transform: translateY(-1px); /* Leve efeito de levantar */
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+.file-actions button:active, .manual-actions button:active {
+  transform: translateY(0px); /* Efeito de clique */
+  box-shadow: none;
+}
+/* Cor específica para botão deletar (Professor) */
+.file-actions .delete-btn {
+  border-color: var(--error-color);
+  color: var(--error-color);
+}
+.file-actions .delete-btn:hover {
+  background-color: var(--error-color);
+  color: var(--text-light); /* Texto claro no fundo vermelho */
+}
+
+
+/* Cabeçalho da Disciplina (Aluno) */
+li.discipline-header {
+  color: var(--text-light);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.6rem;
+  margin-bottom: 1.2rem;
+  margin-top: 1.8rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  list-style: none;
+  display: flex;
+  align-items: center;
+}
+li.discipline-header:first-of-type {
+   margin-top: 0;
+}
+li.discipline-header .fa-tag {
+  margin-right: 0.6rem;
+  color: var(--primary-color);
+  opacity: 0.9;
+}
+
+/* --- Chat Area (Sem alterações significativas) --- */
+.chat-area { flex: 1; display: flex; flex-direction: column; background-color: rgba(0, 0, 0, 0.4); border-radius: 8px; overflow: hidden; min-width: 0; border: 1px solid rgba(255, 255, 255, 0.1); }
+.chat-area-header { padding: 0.8rem 1.5rem; background-color: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0;}
+.chat-area-header h2 { display: flex; align-items: center; gap: 0.6rem; color: var(--primary-color); font-size: 1.2rem; margin: 0;}
+.chat-container { flex: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+.chat-footer { flex-shrink: 0; background-color: var(--dark-bg); padding: 1rem 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+#chat-form { display: flex; gap: 0.75rem; align-items: center; }
+#message-input { flex: 1; padding: 0.8rem 1rem; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 20px; background-color: rgba(255, 255, 255, 0.08); color: var(--text-light); font-size: 1rem; margin-bottom: 0; transition: border-color 0.2s, box-shadow 0.2s; }
+#message-input:focus { border-color: var(--primary-color); box-shadow: 0 0 8px rgba(241, 196, 15, 0.3); outline: none; }
+#chat-form button { border-radius: 50%; width: 45px; height: 45px; padding: 0; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; border: none; background-color: var(--primary-color); color: var(--text-dark); flex-shrink: 0; transition: filter 0.2s, transform 0.1s; }
+#chat-form button:hover { filter: brightness(1.15); }
+#chat-form button:active { transform: scale(0.95); }
+#chat-form button:disabled { background-color: var(--text-muted); cursor: not-allowed; opacity: 0.6;}
+
+/* Mensagens (Pequenos ajustes visuais) */
+.message { display: flex; flex-direction: column; max-width: 80%; /* Um pouco mais largas */ padding: 0.8rem 1.2rem; border-radius: 12px; /* Menos arredondado */ position: relative; word-wrap: break-word; box-shadow: 0 1px 4px rgba(0,0,0,0.4); line-height: 1.5; margin-bottom: 0.5rem; /* Espaço entre msgs */ }
+.message.tutor { background: var(--medium-bg); /* Usar variável se existir, senão define como #444 */ background-color: #444; color: var(--text-light); align-self: flex-start; border-bottom-left-radius: 4px; }
+.message.user { background: var(--primary-color); color: var(--text-dark); align-self: flex-end; border-bottom-right-radius: 4px; }
+.message-content { font-size: 0.95rem; /* Ligeiramente menor */ }
+.message-content p:last-child { margin-bottom: 0; }
+.message-content code { background-color: rgba(0, 0, 0, 0.4); padding: 0.2em 0.5em; border-radius: 4px; font-size: 0.85em; }
+.message-content pre { background-color: rgba(0, 0, 0, 0.5); padding: 0.8em 1em; border-radius: 5px; overflow-x: auto; margin: 0.6em 0; }
+.message-content ul, .message-content ol { margin: 0.5em 0 0.5em 1.8em; } /* Ajuste margem listas */
+.message-time { font-size: 0.7rem; color: var(--text-muted); align-self: flex-end; margin-top: 0.4rem; opacity: 0.7; }
+.message.user .message-time { color: rgba(0, 0, 0, 0.5); opacity: 0.9;}
+
+/* Loading Indicators (Sem alterações) */
+.loading-indicator i.fa-spinner { color: var(--primary-color); }
+#files-loading i.fa-spinner, #manuals-loading i.fa-spinner { color: var(--primary-color); vertical-align: middle; }
+#files-loading span, #manuals-loading span { vertical-align: middle; color: var(--text-muted); margin-left: 8px; }
+
+/* Header (Sem alterações) */
+.main-header { display: flex; justify-content: space-between; align-items: center; padding: 0 1.5rem; min-height: var(--header-height); background-color: var(--dark-bg); color: var(--text-light); box-shadow: 0 3px 8px rgba(0,0,0,0.4); position: sticky; top: 0; z-index: 100; width: 100%; }
+.header-left { display: flex; align-items: center; gap: 1rem; }
+.header-right { display: flex; align-items: center; }
+.main-header .logo { display: flex; align-items: center; }
+.main-header .logo-img { height: calc(var(--header-height) - 22px); margin-right: 10px; border-radius: 4px; }
+.main-header .logo-text { font-size: 1.4rem; font-weight: 700; color: var(--primary-color); letter-spacing: -0.5px;}
+.mobile-menu-button { display: none; background: none; border: none; color: var(--text-light); font-size: 1.7rem; cursor: pointer; padding: 0.4rem; margin-right: 0.5rem; line-height: 1; }
+.mobile-menu-button:hover { color: var(--primary-color); }
+.header-right nav { display: flex; align-items: center; }
+.user-actions { display: flex; align-items: center; gap: 1.5rem; }
+.user-info { display: flex; align-items: center; gap: 0.8rem; }
+.user-info .profile-icon { font-size: 1.5rem; color: var(--primary-color); }
+.user-info span { opacity: 0.9; white-space: nowrap; }
+#logout-button { border: 1px solid var(--primary-color); padding: 0.4rem 0.9rem; border-radius: var(--border-radius); color: var(--primary-color); transition: background-color 0.2s ease, color 0.2s ease; background: transparent; font-weight: 500; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+#logout-button .logout-text { display: inline; }
+#logout-button:hover{ background-color: var(--primary-color); color: var(--text-dark); }
+.desktop-menu { list-style: none; margin: 0; padding: 0; }
+
+
+/* --- MEDIA QUERIES --- */
+@media (max-width: 992px) {
+  .mobile-menu-button {
+    display: block; /* REMOVA o !important se não for estritamente necessário */
+    /* Estilos de debug removidos */
+    width: auto; height: auto; position: static; z-index: auto; /* Reset */
+  }
+  .dashboard-main { flex-direction: column; padding: 0; gap: 0; overflow: visible; } /* Permitir scroll vertical */
+  .sidebar { position: fixed; left: -100%; top: var(--header-height); bottom: 0; width: 300px; max-width: 85%; z-index: 101; transition: left 0.35s cubic-bezier(0.25, 0.1, 0.25, 1); background-color: var(--dark-bg); border-right: 1px solid var(--medium-bg); flex-shrink: 0; overflow-y: auto; padding: 1.5rem; /* Padding maior no mobile */ border-radius: 0; box-shadow: 4px 0px 15px rgba(0,0,0,0.3); }
+  .sidebar.active { left: 0; }
+  .chat-area { width: 100%; height: auto; /* Altura automática */ min-height: calc(100vh - var(--header-height)); /* Garante altura mínima */ border-radius: 0; border: none; /* Remove borda no mobile */ }
+  body.sidebar-active .dashboard-main::after { content: ''; position: fixed; /* Fixo para cobrir tudo */ top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.6); z-index: 100; opacity: 1; transition: opacity 0.35s ease; }
+  body:not(.sidebar-active) .dashboard-main::after { opacity: 0; pointer-events: none; }
+}
+
+@media (max-width: 480px) {
+   .sidebar { width: 280px; padding: 1rem; }
+   .mobile-menu-button { font-size: 1.6rem; }
+   .main-header { padding: 0 0.8rem; }
+   .main-header .logo-text { font-size: 1.1rem; }
+   .main-header .logo-img { height: calc(var(--header-height) - 28px); margin-right: 6px;}
+   .user-actions { gap: 0.8rem; }
+   .dashboard-main { gap: 0; padding: 0.5rem; } /* Add padding around main area */
+   .sidebar { top: calc(var(--header-height) + 0.5rem); bottom: 0.5rem; left: -100%; /* Adjust positioning */ }
+   .chat-area { padding: 0.5rem; border-radius: 6px; /* Add radius back */ }
+   .chat-area-header { padding: 0.6rem 1rem;}
+   .chat-container { padding: 1rem; gap: 0.8rem;}
+   .message { max-width: 90%; padding: 0.7rem 1rem; }
+   .message-content { font-size: 0.9rem; }
+   .chat-footer { padding: 0.6rem 0.8rem; }
+   #message-input { padding: 0.6rem 0.8rem; font-size: 0.9rem; }
+   #chat-form button { width: 38px; height: 38px; font-size: 1.2rem; }
+   .file-item, .manual-item { padding: 0.8rem; } /* Less padding on items */
+   .file-actions, .manual-actions { gap: 0.4rem; }
+   .file-actions button, .manual-actions button { padding: 0.3rem 0.6rem; font-size: 0.8rem;}
+}

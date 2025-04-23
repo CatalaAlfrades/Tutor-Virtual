@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Professor - Tutor Virtual</title>
+    <link rel="stylesheet" href="../style/common.css">
+    <link rel="stylesheet" href="../style/dashboard.css">
+    <link rel="shortcut icon" href="../img/logo-ipiz.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js"></script>
+    <style> /* Estilos Modal, Perfil, Hambúrguer */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; } .modal-overlay.active { opacity: 1; visibility: visible; transition: opacity 0.3s ease; display: flex; } .modal-content { background-color: var(--medium-bg); padding: 2.5rem; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.6); width: 90%; max-width: 550px; position: relative; color: var(--text-light); border-top: 4px solid var(--primary-color); } .modal-close-btn { position: absolute; top: 8px; right: 12px; background: none; border: none; font-size: 2rem; color: var(--text-muted); cursor: pointer; padding: 0; line-height: 1; transition: color 0.2s ease; } .modal-close-btn:hover { color: var(--text-light); } .modal-content h2 { color: var(--primary-color); margin-bottom: 1.5rem; text-align: center; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.6rem;} .modal-content .form-group { margin-bottom: 1rem; } .modal-content label { display: block; margin-bottom: 0.5rem; font-weight: bold; } .modal-content input[type="text"], .modal-content textarea { width: 100%; } .modal-content button[type="submit"] { width: 100%; margin-top: 1rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;}
+        .main-header .user-info { display: flex; align-items: center; gap: 0.8rem; } .main-header .user-info .profile-icon { font-size: 1.5rem; color: var(--primary-color); }
+        /*.mobile-menu-button { display: none; }*/
+    </style>
+</head>
+<body class="dashboard">
+    <header class="main-header">
+        <div class="header-left">
+             <button class="mobile-menu-button" id="mobile-menu-toggle" aria-label="Abrir Menu Lateral" aria-expanded="false"> <i class="fas fa-bars"></i> </button>
+            <div class="logo"> <img src="../img/logo-ipiz.jpg" alt="Logo" class="logo-img" /> <span class="logo-text">Tutor Virtual IPIZ</span> </div>
+        </div>
+        <div class="header-right">
+            <nav>
+                 <div class="user-actions">
+                    <div class="user-info"> <i class="fas fa-user-circle profile-icon"></i> <span>Professor(a) <span id="user-name">Professor(a)</span></span> </div>
+                    <button id="logout-button" title="Sair"><i class="fas fa-sign-out-alt"></i> <span class="logout-text">Sair</span></button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <aside class="sidebar" id="sidebar">
+            <h2><i class="fas fa-folder-open"></i> Gerenciar Manuais</h2>
+            <section class="upload-section">
+                <h3><i class="fas fa-upload"></i> Novo Upload</h3>
+                 <div id="upload-message-area" class="message-area"></div>
+                <form id="select-file-form">
+                    <label for="file-input" class="btn" style="width: 100%; margin-bottom: 0.5rem;"> <i class="fas fa-folder-open"></i> Escolher Arquivo... </label>
+                    <input type="file" id="file-input" name="file" accept=".pdf,.doc,.docx,.txt,.ppt,.pptx,.jpeg,.jpg,.png,.xls,.xlsx,.odt,.odp,.ods" style="display: none;">
+                    <div id="file-name-display" style="text-align: center; margin-bottom: 1rem; font-style: italic; color: var(--text-muted); min-height: 1.2em;">Nenhum arquivo selecionado</div>
+                </form>
+            </section>
+            <section class="files-section">
+                <h3><i class="fas fa-list"></i> Manuais Enviados</h3>
+                <div id="files-message-area" class="message-area"></div>
+                <div id="files-loading" style="text-align: center; display: none; padding: 1rem;"> <i class="fas fa-spinner fa-spin fa-lg"></i> <span style="margin-left: 10px;">Carregando manuais...</span> </div>
+                <ul id="files-list"></ul>
+            </section>
+            <section class="sidebar-extra-actions" style="margin-top: 2rem; border-top: 1px solid var(--medium-bg); padding-top: 1.5rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                <button id="open-history-modal-btn" class="btn btn-secondary-alt" >
+                    <i class="fas fa-history"></i> Ver Histórico de Conversas
+                </button>
+                <button id="open-feedback-modal-btn" class="btn btn-secondary-alt">
+                    <i class="fas fa-comment-dots"></i> Enviar Feedback / Reportar
+                </button>
+            </section>
+        </aside>
+
+        <!-- ** ÁREA DO CHAT - ESTRUTURA COMPLETA ** -->
+        <section class="chat-area">
+             <header class="chat-area-header">
+                 <h2 style="color: var(--primary-color); font-size: 1.3rem; margin: 0;"><i class="fas fa-comments"></i> Chat com Tutor IA</h2>
+             </header>
+             <!-- Container onde as mensagens aparecem -->
+            <div id="chat-container" class="chat-container">
+                <!-- Mensagens serão adicionadas aqui pelo JS -->
+            </div>
+             <!-- Footer com formulário de envio -->
+            <footer class="chat-footer">
+                 <div id="chat-message-area" class="message-area" style="margin-bottom: 0.5rem;"></div>
+                <form id="chat-form">
+                    <input type="text" id="message-input" placeholder="Digite sua dúvida ou comando..." required autocomplete="off">
+                    <button type="submit" id="send-button" title="Enviar Mensagem">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </footer>
+        </section>
+        <!-- ** FIM ÁREA DO CHAT ** -->
+
+    </main>
+
+    <div id="loading" class="loading-indicator"> <i class="fas fa-spinner fa-spin fa-3x"></i> </div>
+
+    <div id="metadata-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeMetadataModal()" title="Cancelar Upload/Edição">×</button>
+            <h2><i class="fas fa-info-circle"></i> Detalhes do Manual</h2>
+            <form id="metadata-form">
+                 <!-- Input Hidden Opcional, mas útil para edição -->
+                 <input type="hidden" id="modal-file-id">
+                <div id="modal-filename-preview" style="margin-bottom: 1rem; font-weight: bold; text-align: center;"></div>
+                <div class="form-group"> <label for="modal-title">Título do Manual:</label> <input type="text" id="modal-title" required placeholder="Título para exibição"> </div>
+                <div class="form-group"> <label for="modal-description">Descrição Curta:</label> <textarea id="modal-description" rows="4" placeholder="Breve descrição do conteúdo"></textarea> </div>
+                <div class="form-group">
+                    <label for="modal-disciplina">Disciplina (Opcional):</label>
+                    <input type="text" id="modal-disciplina" placeholder="Ex: Algoritmos, Redes, Física I">
+                </div>
+                 <div id="modal-message-area" class="message-area" style="margin-bottom: 1rem;"></div>
+                <button type="submit" id="confirm-upload-button"><i class="fas fa-check"></i> Confirmar e Enviar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="history-modal" class="modal-overlay">
+        <div class="modal-content history-modal-content">
+            <button id="close-history-modal-btn" class="modal-close-btn" title="Fechar Histórico">×</button>
+            <h2><i class="fas fa-history"></i> Histórico de Conversas</h2>
+
+            <div class="history-filters" style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; border-bottom: 1px solid var(--medium-bg); padding-bottom: 1rem;">
+                <input type="text" id="history-search-q" placeholder="Buscar por palavra..." style="flex-grow: 1; min-width: 150px; margin-bottom: 0;">
+                <input type="date" id="history-date-from" title="Data Inicial" style="min-width: 120px; margin-bottom: 0;">
+                <input type="date" id="history-date-to" title="Data Final" style="min-width: 120px; margin-bottom: 0;">
+                <button id="history-search-btn" class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+    
+             <div id="history-message-area" class="message-area" style="margin-bottom: 0.5rem;"></div>
+    
+            <div id="history-results-container" style="height: 60vh; max-height: 500px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 1rem; margin-bottom: 1rem; background-color: rgba(0,0,0,0.2);">
+                <p style="text-align:center; color: var(--text-muted);">Carregando histórico...</p>
+            </div>
+
+            <div class="history-pagination" style="display: flex; justify-content: space-between; align-items: center;">
+                <button id="history-prev-btn" class="btn btn-secondary-alt" disabled><i class="fas fa-arrow-left"></i> Anterior</button>
+                <span id="history-page-info" style="font-size: 0.9rem; color: var(--text-muted);">Página ? de ?</span>
+                <button id="history-next-btn" class="btn btn-secondary-alt" disabled>Próxima <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="feedback-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeFeedbackModal()" title="Fechar">×</button>
+            <h2><i class="fas fa-comment-dots"></i> Enviar Feedback</h2>
+            <p style="margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-muted);">Encontrou um erro ou tem uma sugestão? Conte-nos!</p>
+            <form id="feedback-form">
+                <div class="form-group">
+                    <label for="feedback-text">Sua mensagem:</label>
+                    <textarea id="feedback-text" rows="6" placeholder="Descreva o problema ou sua sugestão aqui..." required></textarea>
+                </div>
+                <div id="feedback-message-area" class="message-area" style="margin-bottom: 1rem;"></div>
+                <button type="submit" id="submit-feedback-btn" class="btn" style="width:100%;"><i class="fas fa-paper-plane"></i> Enviar Mensagem</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../script/utils.js"></script>
+    <script src="../script/api.js"></script>
+    <script src="../script/chat_professor.js"></script>
+</body>
+</html>

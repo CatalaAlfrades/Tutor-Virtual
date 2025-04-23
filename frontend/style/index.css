@@ -1,0 +1,197 @@
+/* Reset global e configurações básicas */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* BODY como flex container para manter footer no fim */
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    color: #333333;
+  
+    /* Imagem de fundo em tela cheia */
+    background: url('../img/Home_page.jpeg') center center / cover no-repeat fixed;
+  }
+  
+  /* Ajusta a área principal para "empurrar" o footer para o final */
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Cabeçalho */
+  .header {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: rgba(51, 51, 51, 0.9); /* Semitransparente */
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+  }
+  .logo-img {
+    height: 40px;
+    margin-right: 10px;
+  }
+  .logo-text {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  
+  .nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+  }
+  .nav a {
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: 500;
+  }
+  .nav a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Seção Hero */
+  .hero {
+    /* Fundo semitransparente para destacar texto e ver o fundo atrás */
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 4rem 2rem;
+    text-align: center;
+    max-width: 1200px;
+    margin: 2rem auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .hero h1 {
+    /* Responsivo com clamp: min 1.5rem, preferencial 5vw, máx 2.5rem */
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    margin-bottom: 1rem;
+    color: #333333;
+  }
+  .hero p {
+    font-size: clamp(1rem, 3vw, 1.2rem);
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    color: #555555;
+  }
+  .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  /* Botões */
+  .btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+  .btn-primary {
+    background-color: #007BFF;
+    color: #ffffff;
+    border: none;
+  }
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+  .btn-secondary {
+    background-color: transparent;
+    color: #007BFF;
+    border: 2px solid #007BFF;
+  }
+  .btn-secondary:hover {
+    background-color: #e0e0e0;
+  }
+  
+  /* Seção de Funcionalidades */
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding: 3rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .feature-item {
+    flex: 1 1 calc(33% - 2rem);
+    /* Semitransparente para ver o fundo atrás */
+    background: rgba(255, 255, 255, 0.8);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  
+  .feature-item h2 {
+    margin-bottom: 1rem;
+    color: #333333;
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+  }
+  .feature-item p {
+    color: #555555;
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+  }
+  
+  /* Rodapé */
+  .footer {
+    flex-shrink: 0;
+    background-color: rgba(51, 51, 51, 0.9); /* Semitransparente */
+    color: #ffffff;
+    text-align: center;
+    padding: 1rem;
+    margin-top: auto; /* Para "grudar" no fim */
+  }
+  
+  /* Informações adicionais no rodapé */
+  .footer .footer-info {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    opacity: 0.9;
+  }
+  
+  /* Responsividade adicional */
+  @media (max-width: 992px) {
+    .hero {
+      margin: 1rem auto;
+    }
+    .features {
+      padding: 2rem 1rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .features {
+      flex-direction: column;
+      align-items: center;
+    }
+    .feature-item {
+      flex: 1 1 100%;
+      margin-bottom: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .header {
+      flex-direction: column;
+    }
+    .nav ul {
+      margin-top: 1rem;
+    }
+  }
+  

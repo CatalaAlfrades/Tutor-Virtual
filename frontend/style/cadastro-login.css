@@ -1,0 +1,83 @@
+/* Container centralizado para formulários */
+body{
+    background-color: rgb(186, 130, 0);
+}
+.container {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 2rem;
+    margin-top: 2rem;
+    max-width: 400px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    margin-left: auto;
+    margin-right: auto;
+    color: white;
+}
+
+/* Títulos */
+.container h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #f1c40f;
+}
+
+/* Formulários */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+input, select, textarea {
+    padding: 0.6rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+/* Foco */
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #f1c40f;
+}
+
+/* Botões */
+button {
+    padding: 0.75rem;
+    background: transparent;
+    border: 2px solid #f1c40f;
+    color: #f1c40f;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.3s ease, color 0.3s ease;
+}
+
+button:hover {
+    background: #f1c40f;
+    color: black;
+}
+
+/* Links */
+.container p {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.container p a {
+    font-weight: bold;
+    color: #f1c40f;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+    .container {
+        width: 90%;
+        padding: 1rem;
+    }
+}

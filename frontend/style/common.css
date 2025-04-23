@@ -1,0 +1,228 @@
+:root {
+    --primary-color: #f1c40f; /* Dourado brilhante */
+    --secondary-color: rgb(186, 130, 0); /* Dourado escuro / Fundo geral */
+    --dark-bg: #1e1e1e; /* Fundo MUITO escuro (Header/Footer/Sidebar BG) */
+    --medium-bg: #2a2a2a; /* Fundo intermediário (ex: modal content) */
+    --light-bg: #3c3c3c;  /* Fundo mais claro (ex: inputs) */
+    --dark-bg-transparent: rgba(0, 0, 0, 0.6); /* Fundo semi-transparente (containers?) */
+
+    --text-light: #e0e0e0; /* Branco suave */
+    --text-dark: #1f1f1f;  /* Preto/Cinza muito escuro (para botões primários) */
+    --text-muted: #9e9e9e; /* Cinza para texto secundário/placeholders */
+
+    --error-color: #e74c3c;  /* Vermelho para erros */
+    --success-color: #2ecc71;/* Verde para sucesso */
+    --info-color: #3498db;   /* Azul para info (opcional) */
+
+    --border-color-light: rgba(255, 255, 255, 0.15); /* Cor de borda sutil */
+    --border-color-medium: rgba(255, 255, 255, 0.25);
+
+    --header-height: 60px; /* Altura do cabeçalho */
+    --border-radius: 4px; /* Arredondamento padrão */
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--dark-bg); /* Fundo padrão escuro */
+    color: var(--text-light); /* Texto padrão claro */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    line-height: 1.6;
+    font-size: 16px; /* Tamanho base */
+  }
+
+  a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s ease, opacity 0.2s ease;
+  }
+
+  a:hover {
+    /* color: #ffdd70; /* Dourado mais claro no hover */
+    opacity: 0.85;
+    text-decoration: underline;
+  }
+
+  /* Estilo Base para Botões */
+  button, .btn {
+    padding: 0.7rem 1.3rem; /* Ajuste de padding */
+    border: 1px solid var(--primary-color); /* Borda com cor primária */
+    background-color: transparent;
+    color: var(--primary-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 0.95rem; /* Tamanho ligeiramente menor */
+    font-weight: 500; /* Menos bold */
+    transition: all 0.2s ease;
+    text-align: center;
+    display: inline-flex; /* Para alinhar ícone e texto */
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem; /* Espaço entre ícone e texto */
+    line-height: 1.4; /* Melhor alinhamento vertical */
+  }
+  button i, .btn i {
+    line-height: 1; /* Evita que ícone afete altura */
+  }
+
+  button:hover, .btn:hover {
+    background-color: var(--primary-color);
+    color: var(--text-dark); /* Cor escura para contraste */
+    border-color: var(--primary-color);
+    transform: translateY(-1px); /* Leve efeito */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  }
+  button:active, .btn:active {
+      transform: translateY(0);
+      box-shadow: none;
+  }
+
+  button:disabled, .btn:disabled {
+      border-color: var(--text-muted);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      background-color: transparent !important; /* Garante fundo transparente */
+      opacity: 0.5;
+      transform: none;
+      box-shadow: none;
+  }
+
+  /* Inputs, Selects, Textareas */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 0.8rem 1rem; /* Padding ajustado */
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color-medium); /* Borda mais clara */
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    background-color: var(--light-bg); /* Fundo um pouco mais claro */
+    color: var(--text-light);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+      -webkit-text-fill-color: var(--text-light);
+      -webkit-box-shadow: 0 0 0px 1000px var(--light-bg) inset;
+      transition: background-color 5000s ease-in-out 0s;
+  }
+
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.25); /* Sombra de foco sutil */
+  }
+  textarea {
+      resize: vertical; /* Permitir redimensionar só verticalmente */
+      min-height: 80px; /* Altura mínima */
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500; /* Menos bold */
+    font-size: 0.9rem;
+    color: var(--text-muted); /* Cor mais suave */
+  }
+
+  /* Container genérico (usado em login/cadastro) */
+  .container {
+      background: var(--dark-bg-transparent);
+      padding: 2.5rem 3rem; /* Mais padding */
+      width: 90%; /* Mais flexível */
+      margin: 3rem auto; /* Mais margem */
+      max-width: 450px; /* Um pouco maior */
+      border-radius: 8px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.5); /* Sombra mais pronunciada */
+      color: var(--text-light);
+      border: 1px solid var(--border-color-light); /* Borda sutil */
+  }
+  .container h1 {
+      text-align: center;
+      margin-bottom: 2rem; /* Mais espaço */
+      color: var(--primary-color);
+      font-weight: 600;
+  }
+  .container form { display: flex; flex-direction: column; }
+  .container p { text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted); }
+  .container p a { font-weight: 600; color: var(--primary-color); }
+  .container button[type="submit"] { margin-top: 1rem; } /* Espaço antes do botão */
+
+  /* Cabeçalho Comum (usado em index.html, etc.) */
+  .main-header {
+      display: flex; justify-content: space-between; align-items: center; padding: 0 2rem;
+      height: var(--header-height); background-color: var(--dark-bg); color: var(--text-light);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3); flex-shrink: 0; z-index: 10; position: relative; /* Garante que fique acima */
+  }
+  .main-header .logo { display: flex; align-items: center; gap: 0.8rem; }
+  .main-header .logo-img { height: calc(var(--header-height) - 20px); border-radius: 4px; }
+  .main-header .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--primary-color); }
+  .main-header nav ul { list-style: none; display: flex; align-items: center; gap: 1.5rem; }
+  .main-header nav a { color: var(--text-light); font-weight: 500; padding: 0.5rem 0; background: none; border: none; cursor: pointer; font-size: 1rem; }
+  .main-header nav a:hover { color: var(--primary-color); text-decoration: none; }
+   /* Botão específico no header (se diferente do .btn geral) */
+  .main-header nav button#logout-button {
+      border: 1px solid var(--primary-color); padding: 0.4rem 0.8rem; border-radius: 4px;
+      color: var(--primary-color); background: transparent; transition: all 0.2s ease;
+  }
+  .main-header nav button#logout-button:hover{ background-color: var(--primary-color); color: var(--text-dark); }
+
+  /* Rodapé Comum */
+  .main-footer {
+      background-color: var(--dark-bg); color: var(--text-muted); text-align: center;
+      padding: 1.5rem 1rem; /* Mais padding */ margin-top: auto; font-size: 0.85rem; flex-shrink: 0;
+      border-top: 1px solid var(--border-color-light); /* Linha separadora */
+  }
+
+  /* Indicador de Loading Geral */
+  .loading-indicator {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.75); /* Mais escuro */ z-index: 9999;
+      justify-content: center; align-items: center;
+  }
+  /* Estilo do ícone de loading (Font Awesome) */
+  .loading-indicator i { color: var(--primary-color); }
+  .loading-indicator.active { display: flex; }
+
+  /* Mensagens de Erro/Sucesso/Info */
+  .message-area {
+      padding: 0.8rem 1rem; /* Padding ajustado */ margin-bottom: 1rem; border-radius: var(--border-radius);
+      text-align: center; font-weight: 500; font-size: 0.9rem; /* Menor fonte */
+      display: none; border: 1px solid transparent;
+  }
+  .message-area.error { background-color: rgba(231, 76, 60, 0.15); color: var(--error-color); border-color: rgba(231, 76, 60, 0.5); display: block; }
+  .message-area.success { background-color: rgba(46, 204, 113, 0.15); color: var(--success-color); border-color: rgba(46, 204, 113, 0.5); display: block; }
+  .message-area.info { background-color: rgba(52, 152, 219, 0.15); color: var(--info-color); border-color: rgba(52, 152, 219, 0.5); display: block; } /* Classe Info opcional */
+
+  /* Efeito cursor piscando (para digitação) */
+  .typing-cursor { display: inline-block; vertical-align: bottom; width: 8px; height: 1em; background-color: currentColor; animation: blink 1s step-end infinite; margin-left: 2px; }
+  @keyframes blink { from, to { background-color: transparent } 50% { background-color: currentColor; } }
+  .message.tutor-message .message-content:empty::after { content: '▍'; display: inline-block; animation: blink 1s step-end infinite; }
+
+  /* Responsividade básica para Header/Footer (pode ser sobrescrita em dashboard.css) */
+  @media (max-width: 768px) {
+      .main-header { padding: 0 1rem; height: auto; flex-direction: column; padding-bottom: 0.5rem; }
+      .main-header .logo { margin-bottom: 0.5rem; }
+      .main-header .logo-text{ font-size: 1.2rem; }
+      .main-header nav ul { margin-top: 0.5rem; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+      .container { width: 95%; margin: 1.5rem auto; padding: 2rem; }
+      .main-footer { padding: 1rem; }
+  }

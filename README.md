@@ -1,6 +1,6 @@
-==============================================
+=============================================
  Tutor Virtual IPIZ - Guia de Uso Local
-==============================================
+=============================================
 
 Bem-vindo ao Tutor Virtual IPIZ! Este guia ajudará você a configurar e executar
 o projeto em sua máquina local para desenvolvimento ou teste.

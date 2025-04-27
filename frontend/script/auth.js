@@ -80,10 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 nome: cadastroForm.nome.value.trim(),
                 email: cadastroForm.email.value.trim(),
                 senha: cadastroForm.senha.value.trim(),
-                tipo: cadastroForm.tipo.value,
-                // Envia apenas os campos relevantes
-                disciplinas: cadastroForm.tipo.value === 'professor' ? cadastroForm.disciplinas.value.trim() : undefined,
-                turma: cadastroForm.tipo.value === 'aluno' ? cadastroForm.turma.value.trim() : undefined,
+                tipo: 'aluno',
+                turma: cadastroForm.turma.value.trim()
             };
 
             // Validação simples extra (poderia ser mais robusta)

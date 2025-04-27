@@ -1,14 +1,14 @@
-// frontend/script/api.js (VERSÃO COMPLETA E CORRIGIDA)
-
 const Api = {
 
     // Função _request (robusta, com tratamento de erros e auth)
     _request: async (endpoint, method = 'GET', body = null, requiresAuth = false, isFormData = false) => {
         const url = `${Utils.API_BASE_URL}${endpoint}`;
         const options = { method: method, headers: {} };
+        if (endpoint.includes('/admin/') && !Utils.isAdmin()) {
+            throw new Error('Acesso não autorizado');
+        }
         if (body) { if (isFormData) { options.body = body; } else { options.headers['Content-Type'] = 'application/json'; options.body = JSON.stringify(body); } }
         if (requiresAuth) { const token = Utils.getToken(); if (!token) { console.error('Token não encontrado:', endpoint); Utils.logout(); throw new Error('Autenticação necessária. Faça login novamente.'); } options.headers['Authorization'] = `Bearer ${token}`; }
-        /* console.log(`[API] Request: ${method} ${url}`, body && !isFormData ? body : (isFormData ? '[FormData]' : 'No Body')); */
         try {
             const response = await fetch(url, options);
             if (response.status === 401 || response.status === 403) { console.warn(`[API] Erro Autorização (${response.status}) em ${method} ${url}.`); Utils.logout(); throw new Error('Sessão expirada ou inválida. Faça login novamente.'); }

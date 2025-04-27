@@ -28,7 +28,6 @@ const storage = multer.diskStorage({
 
 // Define filtros de arquivo (opcional - atualmente aceita tudo)
 const fileFilter = (req, file, cb) => {
-    console.log(`[UploadMiddleware] Recebendo arquivo: ${file.originalname}, Tipo: ${file.mimetype}`);
     // TODO: Adicionar validação de mimetype se necessário
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
     if (allowedTypes.includes(file.mimetype)) {

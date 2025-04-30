@@ -84,21 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 turma: cadastroForm.turma.value.trim()
             };
 
-            // Validação simples extra (poderia ser mais robusta)
-            if (userData.tipo === 'professor' && !userData.disciplinas) {
-                 Utils.showMessage('Por favor, informe as disciplinas que leciona.');
-                 Utils.hideLoading();
-                 if(registerButton) registerButton.disabled = false;
-                 return;
-            }
-             if (userData.tipo === 'aluno' && !userData.turma) {
-                 Utils.showMessage('Por favor, informe sua turma.');
-                 Utils.hideLoading();
-                 if(registerButton) registerButton.disabled = false;
-                 return;
-            }
-
-
             try {
                 const data = await Api.register(userData);
 

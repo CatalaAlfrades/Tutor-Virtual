@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style/common.css"> <!-- Inclui common.css -->
   <link rel="stylesheet" href="style/index.css"> <!-- Mantém index.css para estilos específicos -->
   <link rel="shortcut icon" href="img/logo-ipiz.jpg" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 </head>
 <body>
   <!-- Usar classe do common.css -->
@@ -61,15 +62,20 @@
   <!-- Scripts no final -->
   <script src="script/utils.js"></script>
   <script>
-    // Simples verificação se já está logado para redirecionar (opcional)
-    if (Utils.isLoggedIn()) {
-       const user = Utils.getUserData(); // Pega dados do localStorage
-       if (user && user.tipo === 'aluno') {
-           // window.location.href = 'page/dashboard_aluno.html'; // Descomente se quiser redirect auto
-       } else if (user && user.tipo === 'professor') {
-           // window.location.href = 'page/dashboard_professor.html'; // Descomente se quiser redirect auto
-       }
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const heroTitle = document.querySelector('.hero h1');
+        if(heroTitle) {
+            heroTitle.style.visibility = 'hidden';
+            setTimeout(() => {
+                heroTitle.style.visibility = 'visible';
+                heroTitle.classList.add('animate__animated', 'animate__fadeInUp');
+            }, 1000);
+        }
+
+        window.addEventListener('scroll', () => {
+            document.body.style.backgroundPositionY = `${window.scrollY * 0.5}px`;
+        });
+    });
   </script>
 </body>
 </html>

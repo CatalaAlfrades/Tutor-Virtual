@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 nome: cadastroForm.nome.value.trim(),
                 email: cadastroForm.email.value.trim(),
                 senha: cadastroForm.senha.value.trim(),
-                tipo: 'aluno',
+                tipo: cadastroForm.tipo.value.trim(),
                 turma: cadastroForm.turma.value.trim()
             };
 

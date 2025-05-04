@@ -1,16 +1,14 @@
-// backend/controllers/chatController.js (VERSÃO FINAL REALMENTE COMPLETA v3 - Prioriza IPIZ Knowledge)
-
 const { aiModel, defaultSafetySettings } = require('../config/aiConfig');
-const ChatMessage = require('../models/ChatMessage'); // Modelo para mensagens individuais
+const ChatMessage = require('../models/ChatMessage');
 const FileMeta = require('../models/FileMeta');
 const mongoose = require('mongoose');
-const { extractAndStoreText } = require('./fileController'); // Função de extração unificada
+const { extractAndStoreText } = require('./fileController'); 
 
 // Constantes de configuração (ajuste conforme necessário)
-const MAX_CONTEXT_CHARS = 10000; // Limite de caracteres RAG (ajustável)
-const MAX_HISTORY_MESSAGES_PAIRS = 4; // Máximo de PARES (user+model) para contexto IA (ajustável)
-const HISTORY_PAGE_LIMIT = 50;   // Resultados por página na busca de histórico
-const MAX_FILES_FOR_RAG = 3;     // Máximo de manuais a buscar para RAG
+const MAX_CONTEXT_CHARS = 10000;
+const MAX_HISTORY_MESSAGES_PAIRS = 4; 
+const HISTORY_PAGE_LIMIT = 50; 
+const MAX_FILES_FOR_RAG = 3;   
 
 // Base de conhecimento fixa do IPIZ
 const IPIZ_KNOWLEDGE = {
@@ -34,8 +32,8 @@ const IPIZ_KNOWLEDGE = {
     documentos_comuns: ["Cópia do BI", "Certificado de Habilitações da 9ª Classe (ou equivalente)", "Atestado Médico", "Fotos tipo passe", "Comprovativo de pagamento da taxa de inscrição."],
   },
   contato: {
-    telefone: "+244 XXX XXX XXX", // Substituir pelo número real
-    email: "secretaria.ipiz@gmail.com", // Substituir pelo email real
+    telefone: "+244 928 293 438",
+    email: "secretaria.ipiz@gmail.com",
     horario: "Atendimento da Secretaria: Segunda a Sexta, das 8:00h às 15:30h."
   }
 };
@@ -119,8 +117,8 @@ const processChatMessage = async (req, res, next) => {
         if (ipizDirectAnswer) {
             console.log("[ChatCtrl] Resposta encontrada na base IPIZ Knowledge.");
             const finalReply = ipizDirectAnswer;
-            await saveChatMessages(userId, message, finalReply); // Salva no histórico
-            return res.status(200).json({ reply: finalReply }); // Envia resposta direta
+            await saveChatMessages(userId, message, finalReply); 
+            return res.status(200).json({ reply: finalReply }); 
         }
 
         // *** PASSO 3: Se NÃO encontrou resposta direta, continua com RAG + IA ***
@@ -172,7 +170,7 @@ const processChatMessage = async (req, res, next) => {
         else {
              aiReply = response.text();
              if (relevantManualTitles.size > 0 && contextText) { aiReply += `\n\n*(Baseado em: ${Array.from(relevantManualTitles).join(', ')})*`; }
-             await saveChatMessages(userId, message, aiReply); // Salva interação IA
+             await saveChatMessages(userId, message, aiReply); 
          }
         console.log(`[ChatCtrl] Resposta IA: "${aiReply.substring(0, 100)}..."`);
         res.status(200).json({ reply: aiReply });
@@ -183,7 +181,7 @@ const processChatMessage = async (req, res, next) => {
          if (error.message?.includes('quota')) return res.status(429).json({ message: 'Erro IA: Quota excedida.'});
          if (error.status === 400 && error.message?.includes('Invalid JSON payload')) { console.error("[ChatCtrl] ERRO 400 - Payload Inválido para Gemini:", error.errorDetails || error.message); return res.status(500).json({ message: 'Erro interno ao formatar dados para IA.' }); }
          if (error.response?.data?.error?.message) return res.status(error.response.status || 500).json({ message: `Erro IA: ${error.response.data.error.message}` });
-        next(error); // Passa para handler genérico
+        next(error); 
     }
 };
 

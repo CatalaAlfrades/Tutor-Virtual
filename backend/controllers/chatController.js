@@ -1,275 +1,204 @@
+// backend/controllers/chatController.js (VERSÃO FINAL REALMENTE COMPLETA v3 - Prioriza IPIZ Knowledge)
+
 const { aiModel, defaultSafetySettings } = require('../config/aiConfig');
-const ChatHistory = require('../models/ChatHistory');
-const ChatMessage = require('../models/ChatMessage');
+const ChatMessage = require('../models/ChatMessage'); // Modelo para mensagens individuais
 const FileMeta = require('../models/FileMeta');
 const mongoose = require('mongoose');
-const { extractAndStoreText } = require('./fileController');
+const { extractAndStoreText } = require('./fileController'); // Função de extração unificada
 
-// Constantes
-const MAX_CONTEXT_CHARS = 10000;
-const MAX_HISTORY_MESSAGES = 8;
-const HISTORY_PAGE_LIMIT = 50;
-const MAX_FILES_FOR_RAG = 3;
+// Constantes de configuração (ajuste conforme necessário)
+const MAX_CONTEXT_CHARS = 10000; // Limite de caracteres RAG (ajustável)
+const MAX_HISTORY_MESSAGES_PAIRS = 4; // Máximo de PARES (user+model) para contexto IA (ajustável)
+const HISTORY_PAGE_LIMIT = 50;   // Resultados por página na busca de histórico
+const MAX_FILES_FOR_RAG = 3;     // Máximo de manuais a buscar para RAG
 
-// Base de conhecimento do IPIZ
+// Base de conhecimento fixa do IPIZ
 const IPIZ_KNOWLEDGE = {
   sobre: {
-    historia: "Fundado em 1998, o Instituto Politécnico Industrial do Zango (IPIZ) é referência em formação técnica em Luanda. Pioneiro no ensino profissionalizante industrial de Angola.",
+    historia: "Fundado em 17 de Dezembro de 1998, o Instituto Politécnico Industrial do Zango (IPIZ) Nº2047 é uma referência em formação técnico-profissional em Luanda, Angola. Somos pioneiros na oferta de cursos voltados para as necessidades da indústria local.",
+    missao: "Formar técnicos qualificados e cidadãos responsáveis, capazes de contribuir para o desenvolvimento sustentável de Angola.",
+    visao: "Ser a instituição líder em ensino técnico-profissional industrial em Angola, reconhecida pela excelência e inovação.",
     campus: {
-      localizacao: "Zango 8000, Município de Calumbo, Icolo e Bengo",
-      infraestrutura: "12 laboratórios, biblioteca e auditório para 400 pessoas",
+      localizacao: "Zango 8000, Município de Viana (próximo à via expresso), Luanda, Angola.",
+      infraestrutura: "Contamos com salas de aula modernas, 12 laboratórios bem equipados (Mecânica, Eletricidade, Informática, Química, etc.), oficinas, biblioteca atualizada e um auditório com capacidade para cerca de 400 pessoas.",
     },
     cursos: [
-      "Mecânica Industrial (Manhã/Tarde)",
-      "Energias Renováveis (Manhã/Tarde)",
-      "Automação Industrial (Manhã/Tarde)", 
-      "Técnico de Informática (Manhã/Tarde)",
-      "Bioquímica (Manhã/Tarde)"
+      "Técnico de Informática - Sistemas Multimédia", "Técnico de Energias Renováveis - Sistemas Solares e Eólicos", "Técnico de Manutenção Industrial - Mecatrónica",
+      "Técnico de Frio e Climatização", "Técnico de Desenho Técnico - Construção Civil", "Técnico de Electrónica e Automação - Automação Industrial",
+      "Técnico de Máquinas e Motores", "Técnico de Electricidade - Instalações Eléctricas", "Petroquímica - Laboratório", "Química - Técnico de Laboratório"
     ]
   },
-  admission: {
-    processo: "Processo seletivo anual com prova de Matemática e Língua Portuguesa",
-    documentos: ["Certificado de Habilitações", "BI", "Atestado Médico", "4 Fotos Tipo Passe"],
+  admissao: {
+    processo: "O ingresso é feito anualmente através de um exame de acesso nacional ou processo de avaliação específico do IPIZ, geralmente incluindo provas de Língua Portuguesa e Matemática. Consulte o edital oficial para datas e requisitos.",
+    requisitos_gerais: "Normalmente exige-se ter concluído a 9ª classe do ensino geral. Documentos específicos são detalhados no edital de cada ano.",
+    documentos_comuns: ["Cópia do BI", "Certificado de Habilitações da 9ª Classe (ou equivalente)", "Atestado Médico", "Fotos tipo passe", "Comprovativo de pagamento da taxa de inscrição."],
   },
   contato: {
-    telefone: "+244 900 456 789",
-    email: "secretaria@ipiz.ed.ao",
-    horario: "Segunda a Sexta: 8:00h - 15:30h"
+    telefone: "+244 XXX XXX XXX", // Substituir pelo número real
+    email: "secretaria.ipiz@gmail.com", // Substituir pelo email real
+    horario: "Atendimento da Secretaria: Segunda a Sexta, das 8:00h às 15:30h."
   }
 };
 
 // --- Funções Auxiliares ---
+
+/** Busca informações RELEVANTES e FORMATADAS da base de conhecimento fixa */
 async function getRelevantIPIZInfo(userMessage) {
   const lowerMessage = userMessage.toLowerCase();
-  let infoSections = [];
-
-  // Detecção de tópicos melhorada
+  let foundInfo = null;
   const topics = {
-    historia: /(hist[oó]ria|fundac[aã]o|origem)/i,
-    cursos: /(curso|disciplina|matr[ií]cula|grade)/i,
-    localizacao: /(onde fica|localiz(ação|ado)|endereço|campus|mapa)/i,
-    contato: /(contato|telefone|email|hor[aá]rio|visitar)/i
+    historia: [/hist[oó]ria/, /fundac[aã]o/, /origem/, /quando surgiu/, /criado em/, /ano de cria[cç][aã]o/i],
+    cursos: [/curso/, /disciplina/, /formaç[aã]o/, /área/, /matr[ií]cula/, /grade/, /ensina/, /o que tem/, /lista de cursos/i],
+    localizacao: [/onde fica/, /localiz(ação|ado)/, /endereço/, /campus/, /mapa/, /morada/, /como chegar/i],
+    contato: [/contato/, /telefone/, /email/, /ligar/, /falar com/, /hor[aá]rio/, /visitar/, /secretaria/, /atendimento/i],
+    admissao: [/admissão/, /ingresso/, /requisitos/, /documentos/, /inscri(ção|ções)/, /inscrev(er|eu)/, /entrar/, /como estudar/i],
+    missao_visao: [/missão/, /visão/, /valores/, /objectivos inst/i],
+    infraestrutura: [/infraestrutura/, /laborat[oó]rios/, /biblioteca/, /oficinas/, /audit[oó]rio/, /equipamentos/i]
   };
 
-  if (topics.historia.test(lowerMessage)) {
-    infoSections.push(`## História do IPIZ\n${IPIZ_KNOWLEDGE.sobre.historia}`);
-  }
+  if (topics.historia.some(regex => regex.test(lowerMessage))) foundInfo = `## História do IPIZ\n${IPIZ_KNOWLEDGE.sobre.historia}`;
+  else if (topics.missao_visao.some(regex => regex.test(lowerMessage))) foundInfo = `## Missão e Visão\n**Missão:** ${IPIZ_KNOWLEDGE.sobre.missao}\n**Visão:** ${IPIZ_KNOWLEDGE.sobre.visao}`;
+  else if (topics.cursos.some(regex => regex.test(lowerMessage))) { const cursos = IPIZ_KNOWLEDGE.sobre.cursos.map(c => `- ${c}`).join('\n'); foundInfo = `## Cursos Oferecidos no IPIZ\n${cursos}\n\nConsulte a secretaria para detalhes.`; }
+  else if (topics.localizacao.some(regex => regex.test(lowerMessage))) foundInfo = `## Localização do IPIZ\n${IPIZ_KNOWLEDGE.sobre.campus.localizacao}`;
+  else if (topics.infraestrutura.some(regex => regex.test(lowerMessage))) foundInfo = `## Infraestrutura do IPIZ\n${IPIZ_KNOWLEDGE.sobre.campus.infraestrutura}`;
+  else if (topics.admissao.some(regex => regex.test(lowerMessage))) foundInfo = `## Processo de Admissão\n${IPIZ_KNOWLEDGE.admission.processo}\n**Requisitos Gerais:** ${IPIZ_KNOWLEDGE.admission.requisitos_gerais}\n**Documentos Comuns:** ${IPIZ_KNOWLEDGE.admission.documentos_comuns.join(', ')}. (Verifique edital oficial)`;
+  else if (topics.contato.some(regex => regex.test(lowerMessage))) foundInfo = `## Contatos do IPIZ\n**Telefone:** ${IPIZ_KNOWLEDGE.contato.telefone}\n**Email:** ${IPIZ_KNOWLEDGE.contato.email}\n**Horário:** ${IPIZ_KNOWLEDGE.contato.horario}`;
 
-  if (topics.cursos.test(lowerMessage)) {
-    const cursos = IPIZ_KNOWLEDGE.sobre.cursos.map(c => `- ${c}`).join('\n');
-    infoSections.push(`## Cursos Oferecidos\n${cursos}\n\n**Duração:** 3-5 anos com estágio obrigatório`);
-  }
+  // Limita tamanho (redundante se MAX_CONTEXT_CHARS for grande, mas seguro)
+  const maxIpizChars = Math.floor(MAX_CONTEXT_CHARS * 0.3);
+  if (foundInfo && foundInfo.length > maxIpizChars) { foundInfo = foundInfo.substring(0, maxIpizChars) + '\n[...]'; }
 
-  if (topics.localizacao.test(lowerMessage)) {
-    infoSections.push(`## Localização do Campus\n**Endereço:** ${IPIZ_KNOWLEDGE.sobre.campus.localizacao}\n**Infraestrutura:** ${IPIZ_KNOWLEDGE.sobre.campus.infraestrutura}`);
-  }
-
-  if (topics.contato.test(lowerMessage)) {
-    infoSections.push(`## Contatos\n**Telefone:** ${IPIZ_KNOWLEDGE.contato.telefone}\n**Email:** ${IPIZ_KNOWLEDGE.contato.email}\n**Horário:** ${IPIZ_KNOWLEDGE.contato.horario}`);
-  }
-
-  // Combina e limita o tamanho
-  let combinedInfo = infoSections.join('\n\n');
-  if (combinedInfo.length > MAX_CONTEXT_CHARS * 0.3) {
-    combinedInfo = combinedInfo.substring(0, MAX_CONTEXT_CHARS * 0.3) + '\n[...]';
-  }
-
-  return combinedInfo ? `**INFORMAÇÕES INSTITUCIONAIS:**\n${combinedInfo}\n` : '';
+  // Retorna formatado ou vazio
+  return foundInfo ? `**INFORMAÇÕES INSTITUCIONAIS IPIZ:**\n${foundInfo}\n` : '';
 }
 
+/** Adiciona instruções sobre como usar o contexto dos manuais (se houver) */
 async function enhanceWithManualContext(contextText, relevantManualTitles) {
-  if (relevantManualTitles.size === 0) return '';
-  
-  return `
-**DIRETRIZES PARA MANUAIS:**
-1. Priorize informações dos documentos mencionados
-2. Cite seções relevantes dos manuais
-3. Converta diretrizes em passos acionáveis
-4. Mantenha terminologia técnica original
-
-`;
+  if (!contextText || relevantManualTitles.size === 0) return '';
+  return `\n**DIRETRIZES PARA USAR MANUAIS:**\n1. Baseie sua resposta PRIMARIAMENTE nas informações dos manuais abaixo.\n2. Cite explicitamente o nome do manual ao usar sua informação (ex: "No manual 'Nome do Manual', ...").\n3. Se a pergunta for um procedimento, liste os passos claramente.\n`;
 }
+
 
 // --- Funções do Controlador ---
+
+/** Salva mensagens no histórico */
 async function saveChatMessages(userId, userMessage, modelReply) {
-    if (!ChatMessage || !userId || !userMessage || !modelReply) {
-        console.warn("[ChatCtrl] Dados insuficientes para salvar histórico.");
-        return;
-    }
-    try {
-        await ChatMessage.create([
-            { user: userId, role: 'user', content: userMessage },
-            { user: userId, role: 'model', content: modelReply }
-        ]);
-    } catch (error) {
-        console.error(`[ChatCtrl] Erro salvar histórico User ${userId}:`, error);
-    }
+    if (!ChatMessage || !userId || !userMessage || !modelReply) { console.warn("[ChatCtrl] Dados insuficientes para salvar histórico."); return; }
+    try { await ChatMessage.create([{ user: userId, role: 'user', content: userMessage }, { user: userId, role: 'model', content: modelReply }]); }
+    catch (error) { console.error(`[ChatCtrl] Erro salvar histórico User ${userId}:`, error.message); }
 }
 
+/** Carrega e FORMATA histórico recente para enviar à IA */
 async function loadFormattedHistoryForAI(userId) {
-    if (!ChatMessage || !userId) return [];
-    try {
-        // 1. Busca mensagens ordenadas corretamente
-        const recentMessages = await ChatMessage.find({ user: userId })
-            .sort({ createdAt: -1 }) // Ordena do mais RECENTE para o mais ANTIGO
-            .limit(MAX_HISTORY_MESSAGES)
-            .select('role content createdAt -_id')
-            .lean();
-
-        // 2. Inverte a ordem para cronologia correta
-        const orderedMessages = recentMessages.reverse();
-
-        // 3. Filtra e formata o histórico
-        const formattedHistory = [];
-        let lastRole = null;
-        
-        for (const msg of orderedMessages) {
-            // Garante alternância user/model
-            if (msg.role !== lastRole) {
-                formattedHistory.push({
-                    role: msg.role === 'user' ? 'user' : 'model',
-                    parts: [{ text: msg.content }]
-                });
-                lastRole = msg.role;
-            }
-        }
-
-        // 4. Garante que começa com user
-        if (formattedHistory[0]?.role === 'model') {
-            formattedHistory.unshift({
-                role: 'user',
-                parts: [{ text: 'Inicie nossa conversa' }]
-            });
-        }
-
-        return formattedHistory.slice(-MAX_HISTORY_MESSAGES); // Mantém apenas o histórico relevante
-
-    } catch (error) {
-        console.error(`[ChatCtrl] Erro carregar histórico IA User ${userId}:`, error);
-        return [];
-    }
+     if (!ChatMessage || !userId) return [];
+     try {
+         const limit = MAX_HISTORY_MESSAGES_PAIRS * 2;
+         const recentMessages = await ChatMessage.find({ user: userId }).sort({ createdAt: 1 }).limit(limit).select('role content -_id').lean();
+         const formattedHistory = []; let expectedRole = 'user';
+         for (const msg of recentMessages) { const currentRole = msg.role === 'user' ? 'user' : 'model'; if (currentRole === expectedRole) { formattedHistory.push({ role: currentRole, parts: [{ text: msg.content }] }); expectedRole = (currentRole === 'user' ? 'model' : 'user'); } else { console.warn(`[ChatCtrl][HistoryFormat] Role ${currentRole} inesperada, pulando.`); expectedRole = currentRole === 'user' ? 'model' : 'user'; } }
+         if (formattedHistory.length > 0 && formattedHistory[0].role === 'model') { formattedHistory.shift(); }
+         if (formattedHistory.length > MAX_HISTORY_MESSAGES_PAIRS * 2) { formattedHistory = formattedHistory.slice(-MAX_HISTORY_MESSAGES_PAIRS * 2); }
+         return formattedHistory;
+     } catch (error) { console.error(`[ChatCtrl] Erro carregar/formatar histórico IA User ${userId}:`, error); return []; }
 }
 
-// --- Controlador Principal ---
+// --- Controlador Principal (PRIORIZA IPIZ_KNOWLEDGE) ---
 const processChatMessage = async (req, res, next) => {
     const { message } = req.body;
     const userId = req.user?._id;
-
+    console.log(`--- [ChatCtrl] processChatMessage User: ${userId} ---`);
     if (!message?.trim()) return res.status(400).json({ message: 'Mensagem vazia.' });
-    if (!aiModel) return res.status(503).json({ message: 'Serviço IA indisponível.' });
-    if (!userId) return res.status(401).json({ message: 'Usuário não autenticado.' });
+    if (!aiModel) { console.error("[ChatCtrl] ERRO FATAL: Modelo IA não config!"); return res.status(503).json({ message: 'Serviço IA indisponível.' }); }
+    if (!userId) { console.warn("[ChatCtrl] ID usuário ausente."); return res.status(401).json({ message: 'Usuário não autenticado.' }); }
 
     try {
-        let contextText = "";
-        let relevantManualTitles = new Set();
-        let totalContextLength = 0;
+        // *** PASSO 1: Tenta obter resposta DIRETA da base IPIZ ***
+        const ipizDirectAnswer = await getRelevantIPIZInfo(message);
 
-        // --- 1. Busca RAG Melhorada ---
-        if (message.length > 3) {
-            const stopWords = ['o','a','os','as','um','uma','de','do','da','dos','das','em','no','na','nos','nas','por','para','com','sem','sob','sobre','que','qual','quem','como','onde','quando','porque','se','mas','ou','e','foi','ser','ter','fazer','dizer','poder','ir','ver','etc','sobre','manual','arquivo','documento', 'ficheiro', 'ajuda', 'preciso', 'gostaria', 'saber'];
-            
-            const keywords = message.toLowerCase()
-                .split(/\s+/)
-                .filter(w => w.length > 2 && !stopWords.includes(w))
-                .map(w => w.replace(/[^a-z0-9áéíóúãõâêôç]/gi, ''));
+        // *** PASSO 2: Se encontrou resposta direta, RETORNA IMEDIATAMENTE ***
+        if (ipizDirectAnswer) {
+            console.log("[ChatCtrl] Resposta encontrada na base IPIZ Knowledge.");
+            const finalReply = ipizDirectAnswer;
+            await saveChatMessages(userId, message, finalReply); // Salva no histórico
+            return res.status(200).json({ reply: finalReply }); // Envia resposta direta
+        }
 
-            if (keywords.length > 0) {
-                const searchPattern = keywords.join('|');
-                const relevantFilesMeta = await FileMeta.find({
-                    metadataComplete: true,
-                    $or: [
-                        { title: { $regex: searchPattern, $options: 'i' } },
-                        { description: { $regex: searchPattern, $options: 'i' } },
-                        { disciplina: { $regex: searchPattern, $options: 'i' } },
-                        { keywords: { $in: keywords } }
-                    ]
-                }).limit(MAX_FILES_FOR_RAG).lean();
+        // *** PASSO 3: Se NÃO encontrou resposta direta, continua com RAG + IA ***
+        console.log("[ChatCtrl] Nenhuma resposta direta IPIZ. Prosseguindo com RAG + IA...");
+        let contextText = ""; let relevantManualTitles = new Set(); let totalContextLength = 0; let ragPerformed = false;
 
-                for (const fileMeta of relevantFilesMeta) {
-                    const fileText = await extractAndStoreText(fileMeta);
-                    if (fileText && fileText.length > 10) {
-                        const chunk = `### [${fileMeta.title}]\n${fileText.substring(0, 3000)}\n---\n`;
-                        if (totalContextLength + chunk.length <= MAX_CONTEXT_CHARS) {
-                            contextText += chunk;
-                            totalContextLength += chunk.length;
-                            relevantManualTitles.add(fileMeta.title);
-                        } else break;
-                    }
+        // 3.1 Busca RAG nos manuais
+        try {
+            if (message.length > 3) {
+                const stopWords = ['o','a','os','as','um','uma','de','do','da','dos','das','em','no','na','nos','nas','por','para','com','sem','sob','sobre','que','qual','quem','como','onde','quando','porque','se','mas','ou','e','foi','ser','ter','fazer','dizer','poder','ir','ver','etc','sobre','manual','arquivo','documento', 'ficheiro', 'ajuda', 'preciso', 'gostaria', 'saber', 'pode', 'me', 'ajudar'];
+                const keywords = message.toLowerCase().split(/\s+/).filter(w => w.length > 2 && !stopWords.includes(w)).map(w => w.replace(/[^a-z0-9áéíóúãõâêôç]/gi, ''));
+                if (keywords.length > 0) {
+                    ragPerformed = true; console.log(`[ChatCtrl] Keywords RAG: ${keywords.join(', ')}`);
+                    const searchPattern = keywords.join('|');
+                    const relevantFilesMeta = await FileMeta.find({ metadataComplete: true, $or: [ { title: { $regex: searchPattern, $options: 'i' } }, { description: { $regex: searchPattern, $options: 'i' } }, { disciplina: { $regex: searchPattern, $options: 'i' } } ] }).limit(MAX_FILES_FOR_RAG).lean();
+                    if (relevantFilesMeta.length > 0) {
+                        console.log(`[ChatCtrl] ${relevantFilesMeta.length} manuais relevantes encontrados.`);
+                        for (const fileMeta of relevantFilesMeta) {
+                            console.log(`[ChatCtrl] Extraindo texto de: "${fileMeta.title || fileMeta.originalName}"...`);
+                            const fileText = await extractAndStoreText(fileMeta);
+                            if (fileText && fileText.length > 10) {
+                                 const chunk = `--- Contexto Manual "${fileMeta.title}":\n${fileText}\n---\n`; const estimatedChunkLength = chunk.length;
+                                 if (totalContextLength + estimatedChunkLength <= MAX_CONTEXT_CHARS) { contextText += chunk; totalContextLength += estimatedChunkLength; relevantManualTitles.add(fileMeta.title); console.log(`[ChatCtrl] Contexto de "${fileMeta.title}" ADICIONADO. Total: ${totalContextLength} chars.`); }
+                                 else { console.warn(`[ChatCtrl] Limite RAG (${MAX_CONTEXT_CHARS}) atingido.`); break; }
+                             } else { console.log(`[ChatCtrl] Texto não útil para "${fileMeta.title}".`); }
+                        }
+                         if(!contextText) console.warn("[ChatCtrl] Manuais encontrados, mas contexto RAG vazio.");
+                    } else console.log("[ChatCtrl] Nenhum manual relevante encontrado.");
                 }
             }
-        }
+        } catch (dbError) { console.error("[ChatCtrl] Erro busca RAG:", dbError.message); }
 
-        // --- 2. Preparação Contextual ---
+        // 3.2 Carrega Histórico
         const formattedHistory = await loadFormattedHistoryForAI(userId);
-        const ipizContext = await getRelevantIPIZInfo(message);
-        const manualInstructions = await enhanceWithManualContext(contextText, relevantManualTitles);
+        const manualInstructions = contextText ? await enhanceWithManualContext(contextText, relevantManualTitles) : '';
 
-        // --- 3. Montagem do Prompt Otimizado ---
-        const finalPrompt = `Você é o Tutor Virtual do IPIZ. Siga rigorosamente:
+        // 3.3 Monta Prompt para IA
+        const finalPrompt = `Você é o Tutor Virtual IPIZ. Responda à pergunta.\n${manualInstructions}${contextText ? `\n**DOCUMENTOS CONSULTADOS (Use como base principal):**\n${contextText}\n` : "\n"}**PERGUNTA DO USUÁRIO:** ${message}\n\n**RESPOSTA:**`;
+        console.log("[ChatCtrl] Enviando prompt final para IA...");
 
-**REGRAS:**
-1. PRIORIZE documentos técnicos quando disponíveis
-2. Use dados institucionais como complemento
-3. Seja específico com números e procedimentos
-4. Formate respostas para fácil leitura
-
-${manualInstructions}
-
-${ipizContext}
-
-${contextText ? `**DOCUMENTOS ENCONTRADOS:**\n${contextText}\n` : "**NENHUM DOCUMENTO RELEVANTE ENCONTRADO**\n"}
-
-**PERGUNTA:** ${message}
-
-**FORMATO DA RESPOSTA:**
-- Título descritivo
-- Listas numeradas para procedimentos
-- Referências explícitas (ex: "Conforme Manual X, seção Y")
-- Links de acesso quando aplicável`;
-
-        // --- 4. Geração e Formatação da Resposta ---
-        const chat = aiModel.startChat({ 
-            history: formattedHistory,
-            generationConfig: { maxOutputTokens: 1200 },
-            safetySettings: defaultSafetySettings
-        });
-
+        // 3.4 Chama IA e Processa Resposta
+        const chat = aiModel.startChat({ history: formattedHistory, generationConfig: { maxOutputTokens: 1200 }, safetySettings: defaultSafetySettings });
         const result = await chat.sendMessage(finalPrompt);
         const response = await result.response;
-        let aiReply = response.text() || "Desculpe, não consegui gerar uma resposta.";
+        let aiReply = ""; const blockReason = response.promptFeedback?.blockReason;
 
-        // Garantia de referências
-        if (relevantManualTitles.size > 0) {
-            if (!aiReply.includes('Manual')) {
-                aiReply += `\n\n(Referência: ${Array.from(relevantManualTitles).join(', ')})`;
-            }
-            aiReply = `📚 **Documentos Consultados:** ${Array.from(relevantManualTitles).join(', ')}\n\n${aiReply}`;
-        } else if (ipizContext) {
-            aiReply += `\n\n_Informações institucionais atualizadas em ${new Date().toLocaleDateString('pt-AO')}_`;
-        }
-
-        // --- 5. Persistência e Retorno ---
-        await saveChatMessages(userId, message, aiReply);
+        if (blockReason) { console.warn(`[ChatCtrl] Resposta IA bloqueada: ${blockReason}`); aiReply = `Desculpe, não posso responder (${blockReason}).`; }
+        else if (!response.text()) { console.warn("[ChatCtrl] IA retornou resposta vazia."); aiReply = "Desculpe, não gerei resposta."; }
+        else {
+             aiReply = response.text();
+             if (relevantManualTitles.size > 0 && contextText) { aiReply += `\n\n*(Baseado em: ${Array.from(relevantManualTitles).join(', ')})*`; }
+             await saveChatMessages(userId, message, aiReply); // Salva interação IA
+         }
+        console.log(`[ChatCtrl] Resposta IA: "${aiReply.substring(0, 100)}..."`);
         res.status(200).json({ reply: aiReply });
 
-    } catch (error) { 
-        console.error(`[ChatCtrl] Erro:`, error); 
-        next(error); 
+    } catch (error) {
+        console.error(`[ChatCtrl] Erro GERAL chat:`, error);
+         if (error.message?.includes('API key not valid')) return res.status(401).json({ message: 'Erro IA: API Key inválida.'});
+         if (error.message?.includes('quota')) return res.status(429).json({ message: 'Erro IA: Quota excedida.'});
+         if (error.status === 400 && error.message?.includes('Invalid JSON payload')) { console.error("[ChatCtrl] ERRO 400 - Payload Inválido para Gemini:", error.errorDetails || error.message); return res.status(500).json({ message: 'Erro interno ao formatar dados para IA.' }); }
+         if (error.response?.data?.error?.message) return res.status(error.response.status || 500).json({ message: `Erro IA: ${error.response.data.error.message}` });
+        next(error); // Passa para handler genérico
     }
 };
 
-// --- Controlador de Histórico (inalterado) ---
+// --- Controlador de Histórico ---
 const getChatHistory = async (req, res, next) => {
     const userId = req.user?._id;
     const { q, page = 1, limit = HISTORY_PAGE_LIMIT, from, to } = req.query;
-    
-    if (!userId) return res.status(401).json({ message: 'Usuário não autenticado.' });
+    console.log(`--- [ChatCtrl] getChatHistory User: ${userId}, Query:`, { q, page, limit, from, to });
+    if (!userId) return res.status(401).json({ message: 'Não autenticado.' });
 
     try {
         const filter = { user: userId };
         if (from || to) filter.createdAt = {};
-        if (from) filter.createdAt.$gte = new Date(from);
-        if (to) filter.createdAt.$lte = new Date(new Date(to).setHours(23, 59, 59, 999));
+        if (from) { try { filter.createdAt.$gte = new Date(from); } catch (e) {} }
+        if (to) { try { filter.createdAt.$lte = new Date(new Date(to).setHours(23, 59, 59, 999)); } catch (e) {} }
         if (q?.trim()) filter.$text = { $search: q.trim() };
 
         const pageNum = Math.max(1, parseInt(page, 10)) || 1;
@@ -277,25 +206,15 @@ const getChatHistory = async (req, res, next) => {
         const skip = (pageNum - 1) * limitNum;
 
         const [messages, totalMessages] = await Promise.all([
-            ChatMessage.find(filter)
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(limitNum)
-                .select('role content createdAt')
-                .lean(),
+            ChatMessage.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limitNum).select('role content createdAt').lean(),
             ChatMessage.countDocuments(filter)
         ]);
+        const totalPages = Math.ceil(totalMessages / limitNum);
+        console.log(`[ChatCtrl] Histórico encontrado: ${messages.length}/${totalMessages} msgs (Pg: ${pageNum}/${totalPages})`);
 
-        res.json({
-            messages,
-            currentPage: pageNum,
-            totalPages: Math.ceil(totalMessages / limitNum),
-            totalMessages
-        });
-    } catch (error) {
-        console.error("[ChatCtrl] Erro buscar histórico:", error);
-        next(error);
-    }
+        res.json({ messages, currentPage: pageNum, totalPages, totalMessages });
+    } catch (error) { console.error("[ChatCtrl] Erro buscar histórico:", error); next(error); }
 };
 
+// Exporta as funções do controlador
 module.exports = { processChatMessage, getChatHistory };

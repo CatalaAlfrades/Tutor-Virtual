@@ -59,7 +59,7 @@ async function getRelevantIPIZInfo(userMessage) {
   else if (topics.cursos.some(regex => regex.test(lowerMessage))) { const cursos = IPIZ_KNOWLEDGE.sobre.cursos.map(c => `- ${c}`).join('\n'); foundInfo = `## Cursos Oferecidos no IPIZ\n${cursos}\n\nConsulte a secretaria para detalhes.`; }
   else if (topics.localizacao.some(regex => regex.test(lowerMessage))) foundInfo = `## Localização do IPIZ\n${IPIZ_KNOWLEDGE.sobre.campus.localizacao}`;
   else if (topics.infraestrutura.some(regex => regex.test(lowerMessage))) foundInfo = `## Infraestrutura do IPIZ\n${IPIZ_KNOWLEDGE.sobre.campus.infraestrutura}`;
-  else if (topics.admissao.some(regex => regex.test(lowerMessage))) foundInfo = `## Processo de Admissão\n${IPIZ_KNOWLEDGE.admission.processo}\n**Requisitos Gerais:** ${IPIZ_KNOWLEDGE.admission.requisitos_gerais}\n**Documentos Comuns:** ${IPIZ_KNOWLEDGE.admission.documentos_comuns.join(', ')}. (Verifique edital oficial)`;
+  else if (topics.admissao.some(regex => regex.test(lowerMessage))) foundInfo = `## Processo de Admissão\n${IPIZ_KNOWLEDGE.admissao.processo}\n**Requisitos Gerais:** ${IPIZ_KNOWLEDGE.admissao.requisitos_gerais}\n**Documentos Comuns:** ${IPIZ_KNOWLEDGE.admissao.documentos_comuns.join(', ')}. (Verifique edital oficial)`;
   else if (topics.contato.some(regex => regex.test(lowerMessage))) foundInfo = `## Contatos do IPIZ\n**Telefone:** ${IPIZ_KNOWLEDGE.contato.telefone}\n**Email:** ${IPIZ_KNOWLEDGE.contato.email}\n**Horário:** ${IPIZ_KNOWLEDGE.contato.horario}`;
 
   // Limita tamanho (redundante se MAX_CONTEXT_CHARS for grande, mas seguro)

@@ -1,0 +1,319 @@
+.admin-dashboard {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  min-height: 100vh;
+  background-color: var(--dark-bg);
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: var(--secondary-color);
+  color: var(--text-light);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cabeçalho da sidebar */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.sidebar-header img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.sidebar-header h3 {
+  color: var(--text-light);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Menu da sidebar */
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+}
+.sidebar-menu li {
+  margin-bottom: 0.5rem;
+}
+/* Links do menu */
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  color: var(--text-light);
+  text-decoration: none;
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.sidebar-menu a i {
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+  transition: color 0.2s ease;
+}
+/* Estado hover/ativo */
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+  background-color: var(--dark-bg-transparent);
+  color: var(--text-light);
+}
+.sidebar-menu a:hover i,
+.sidebar-menu a.active i {
+  color: var(--text-light);
+}
+
+/* Botão de logout na sidebar */
+.logout-btn {
+  margin-top: auto;
+  padding: 0.75rem;
+  background-color: var(--error-color);
+  color: var(--text-light);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+.logout-btn i {
+  margin-right: 8px;
+  color: var(--text-light);
+}
+.logout-btn:hover {
+  background-color: rgba(231, 76, 60, 0.8);
+}
+
+/* Conteúdo principal */
+.main-content {
+  padding: 2rem;
+  background-color: var(--dark-bg);
+  color: var(--text-light);
+}
+
+/* Cabeçalho da página */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.page-title {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* Ícone do menu móvel */
+.mobile-menu-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  cursor: pointer;
+}
+
+/* Cards de conteúdo */
+.content-card {
+  background-color: var(--medium-bg);
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-light);
+}
+.content-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+.content-card h2 i {
+  font-size: 1.3rem;
+  color: var(--primary-color);
+}
+.content-card p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* Formulários em grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.form-full-width {
+  grid-column: span 2;
+}
+
+/* Tabela de lista de professores */
+.professor-list {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+.professor-list th,
+.professor-list td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color-medium);
+}
+.professor-list th {
+  background-color: var(--dark-bg-transparent);
+  font-weight: 600;
+  color: var(--primary-color);
+}
+.professor-list tr:hover {
+  background-color: var(--dark-bg);
+}
+.professor-list td {
+  color: var(--text-light);
+  font-size: 0.95rem;
+}
+
+/* Botões de ação (editar, deletar) */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+.btn-action {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s ease;
+}
+.btn-action i {
+  margin-right: 4px;
+}
+/* Ícone de editar */
+.btn-edit {
+  color: var(--primary-color);
+}
+.btn-edit i {
+  color: var(--primary-color);
+}
+/* Ícone de deletar */
+.btn-delete {
+  color: var(--error-color);
+}
+.btn-delete i {
+  color: var(--error-color);
+}
+.btn-action:hover {
+  background-color: var(--dark-bg-transparent);
+}
+
+/* Conteúdo de abas (tabs) */
+.tab-content {
+  display: none;
+}
+.tab-content.active {
+  display: block;
+}
+
+/* Estilos de Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1050;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+.modal-content {
+  background-color: var(--medium-bg);
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid var(--border-color-light);
+  width: 80%;
+  max-width: 600px;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  color: var(--text-light);
+}
+.close {
+  color: var(--text-muted);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.close:hover,
+.close:focus {
+  color: var(--text-light);
+  text-decoration: none;
+}
+
+/* Garantir que os ícones tenham prioridade */
+.professor-list .btn-action i.fas {
+    display: inline-block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Override para telas pequenas */
+@media (max-width: 768px) {
+    .action-buttons {
+        gap: 0.5rem;
+    }
+    
+    .btn-action i {
+        font-size: 1rem !important;
+    }
+}
+
+/* ==============================
+   Responsividade
+   ============================== */
+@media (max-width: 768px) {
+  .admin-dashboard {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    overflow-y: auto;
+  }
+  .sidebar.active {
+    display: flex;
+  }
+  .mobile-menu-toggle {
+    display: block;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .form-full-width {
+    grid-column: span 1;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-menu-toggle {
+    display: none;
+  }
+}

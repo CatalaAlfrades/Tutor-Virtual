@@ -1,7 +1,7 @@
 // frontend/script/utils.js
 
 const Utils = {
-    API_BASE_URL: 'https://tutor-virtual.onrender.com/api', // AJUSTE CONFORME NECESSÁRIO (URL do seu backend)
+    API_BASE_URL: 'http://localhost:5000/api', // AJUSTE CONFORME NECESSÁRIO (URL do seu backend)
     TOKEN_KEY: 'authToken',
     USER_DATA_KEY: 'userData',
 
@@ -37,9 +37,16 @@ const Utils = {
     logout: () => {
         Utils.removeToken();
         Utils.removeUserData();
+        // Adiciona uma flag temporária
+        localStorage.setItem('loggedOut', 'true');
         // Redireciona para a página de login após limpar os dados
         window.location.href = '../page/login.html'; // Ajuste o caminho se necessário
     },
+      // --- Verificação de administrador ---
+     isAdmin: () => {
+       const userData = Utils.getUserData();
+       return userData && userData.tipo === 'admin';
+     },
 
     // --- UI Helpers ---
     showLoading: (loadingElementId = 'loading') => {

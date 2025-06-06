@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Administrativo - Tutor Virtual</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js"></script>
+  <link rel="shortcut icon" href="../img/logo-ipiz.jpg" type="image/x-icon">
+  <link rel="stylesheet" href="../style/common.css">
+  <link rel="stylesheet" href="../style/dashboard.css">
+  <link rel="stylesheet" href="../style/admin_dashboard.css">
+</head>
+<body>
+  <div class="admin-dashboard">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <img src="../img/logo-ipiz.jpg" alt="Logo">
+        <h3>Área Administrativa</h3>
+      </div>
+      
+      <ul class="sidebar-menu">
+        <li>
+          <a href="#" class="active" data-tab="cadastro-professor">
+            <i class="fas fa-user-plus"></i> Cadastrar Professor
+          </a>
+        </li>
+        <li>
+          <a href="#" data-tab="listar-professores">
+            <i class="fas fa-users"></i> Listar Professores
+          </a>
+        </li>
+      </ul>
+      
+      <button id="logout-btn" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i> Sair
+      </button>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="page-header">
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="page-title">Dashboard Administrativo</h1>
+      </div>
+      
+      <div id="message-area" class="message-area"></div>
+      
+      <!-- Cadastro de Professor Tab -->
+      <div id="cadastro-professor" class="tab-content active">
+        <div class="content-card">
+          <h2><i class="fas fa-user-plus"></i> Cadastrar Novo Professor</h2>
+          <p>Preencha os dados abaixo para cadastrar um novo professor no sistema.</p>
+          
+          <form id="cadastro-professor-form">
+            <div class="form-grid">
+              <div>
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" placeholder="Nome completo" required>
+              </div>
+              
+              <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Email institucional" required>
+              </div>
+              
+              <div>
+                <label for="senha">Senha:</label>
+                <input type="password" id="senha" name="senha" placeholder="Mínimo 8 caracteres" required minlength="8">
+              </div>
+              
+              <div>
+                <label for="disciplinas">Disciplinas:</label>
+                <input type="text" id="disciplinas" name="disciplinas" placeholder="Ex: Matemática, Física" required>
+                <small class="form-help">Separe as disciplinas por vírgula</small>
+              </div>
+              
+              <div class="form-full-width">
+                <button type="submit" id="register-button">Cadastrar Professor</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Listar Professores Tab -->
+      <div id="listar-professores" class="tab-content">
+        <div class="content-card">
+          <h2><i class="fas fa-users"></i> Professores Cadastrados</h2>
+          <p>Lista de todos os professores cadastrados no sistema.</p>
+          
+          <div id="professor-list-container">
+            <table class="professor-list">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Email</th>
+                  <th>Disciplinas</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="professor-list-body">
+                <!-- Dados serão carregados via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="loading" class="loading-indicator">
+    <i class="fas fa-spinner fa-spin fa-3x"></i>
+  </div>
+
+  <script src="../script/utils.js"></script>
+  <script src="../script/api.js"></script>
+  <script src="../script/admin.js"></script>
+  <script src="../script/admin_dashboard.js"></script>
+</body>
+</html>

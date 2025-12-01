@@ -1,7 +1,7 @@
 // frontend/script/utils.js
 
 const Utils = {
-    API_BASE_URL: 'https://tutor-virtual.onrender.com/api', // AJUSTE CONFORME NECESSÁRIO (URL do seu backend)
+    API_BASE_URL: 'http://localhost:5000/api', // AJUSTE CONFORME NECESSÁRIO (URL do seu backend)
     TOKEN_KEY: 'authToken',
     USER_DATA_KEY: 'userData',
 
